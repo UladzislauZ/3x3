@@ -16,8 +16,6 @@ public class GameManager : MonoBehaviour
 
     private int countVariant1 = 4;
     private int countVariant2 = 5;
-    private List<GameObject> _zoneFirstCubes;
-    private List<GameObject> _zoneThirdCubes;
 
     private void Start()
     {
@@ -43,9 +41,9 @@ public class GameManager : MonoBehaviour
     private void InitZones()
     {
         _zoneService.LoadZone1(countVariant1, countVariant2);
-        _zoneFirstCubes = _spawnerService.SpawnCubesZone(_zoneModel.zoneFirst, _zonesPlaces.FirstZonePlaces, false);
+        _zoneModel.zoneFirstCubes = _spawnerService.SpawnCubesZone(_zoneModel.zoneFirst, _zonesPlaces.FirstZonePlaces, false);
         _zoneService.LoadZone3(countVariant1, countVariant2);
-        _zoneThirdCubes = _spawnerService.SpawnCubesZone(_zoneModel.zoneThird, _zonesPlaces.ThirdZonePlaces, true);
+        _zoneModel.zoneThirdCubes = _spawnerService.SpawnCubesZone(_zoneModel.zoneThird, _zonesPlaces.ThirdZonePlaces, true);
     }
 
     private void Subscribe()
@@ -64,10 +62,12 @@ public class GameManager : MonoBehaviour
     {
         if (_playerController.Check())
         {
-            //start anim win
+            //todo add start anim win
             Debug.Log("Win");
             Restart();
         }
+        else
+            Debug.Log("Incorrect");
     }
 
     private void Restart()
@@ -78,10 +78,10 @@ public class GameManager : MonoBehaviour
 
     private void DestroyLastCubes()
     {
-        foreach (var cube in _zoneFirstCubes)
+        foreach (var cube in _zoneModel.zoneFirstCubes)
             Destroy(cube);
 
-        foreach (var cube in _zoneThirdCubes)
+        foreach (var cube in _zoneModel.zoneThirdCubes)
             Destroy(cube);
     }
 
