@@ -8,6 +8,7 @@ public class PlayerController : IPlayerController
     private bool[,] _arrayChecks;
 
     private PlayerModel _playerModel;
+    private PlayerModel _secondPlayerModel;
 
     public PlayerController(Zone secondZonePlaces, ZoneModel zoneModel, PlayerModel playerModel)
     {
@@ -36,6 +37,18 @@ public class PlayerController : IPlayerController
             }
 
         return ValidateZone();
+    }
+
+    public void ImplementConnectedClientData(Vector3 positionMouseClient, bool onClickMouseClient)
+    {
+        _secondPlayerModel = new PlayerModel() { positionMousePlayer = positionMouseClient };
+        var ray = Camera.main.ScreenPointToRay(_secondPlayerModel.positionMousePlayer);
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            var cube = hit.collider.gameObject.GetComponent<Cube>();
+            cube.FolowOn(_secondPlayerModel);
+        }
     }
 
     private string ConvertPlaceToTag(VariantCube variantCube)

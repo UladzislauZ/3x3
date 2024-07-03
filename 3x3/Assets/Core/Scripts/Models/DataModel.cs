@@ -8,6 +8,11 @@ public class DataModel
     public Vector3 positionMouseClient;
     public bool onClickMouseClient;
 
+    public DataModel()
+    {
+
+    }
+
     public DataModel(VariantCube[,] zoneFirst, List<Vector3> zoneThirdCubes)
     {
         this.zoneFirst = zoneFirst;

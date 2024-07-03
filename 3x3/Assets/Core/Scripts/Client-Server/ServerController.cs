@@ -8,15 +8,17 @@ using UnityEngine;
 public class ServerController : IServerController
 {
     private readonly ZoneModel _zoneModel;
+    private readonly IPlayerController _playerController;
 
     private TcpListener _server = null;
     private TcpClient _client = null;
     private NetworkStream _stream = null;
     private Thread _thread;
 
-    public ServerController(ZoneModel zoneModel)
+    public ServerController(ZoneModel zoneModel, IPlayerController playerController)
     {
         _zoneModel = zoneModel;
+        _playerController = playerController;
     }
 
     public void InitServer()
@@ -77,6 +79,6 @@ public class ServerController : IServerController
 
     private void RegisterClientMessage(DataModel dataModel)
     {
-        //todo set client data in PlayerController
+        _playerController.ImplementConnectedClientData(dataModel.positionMouseClient, dataModel.onClickMouseClient);
     }
 }

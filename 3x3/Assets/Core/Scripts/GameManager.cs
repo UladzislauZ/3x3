@@ -10,13 +10,18 @@ public class GameManager : MonoBehaviour
 
     private ZoneModel _zoneModel;
     private PlayerModel _playerModel;
+    private PlayerModel _secondPlayerModel;
     private IZoneService _zoneService;
     private IAssetProvider _assetProvider;
     private ISpawnerService _spawnerService;
     private IPlayerController _playerController;
+    private IClientController _clientController;
+    private IServerController _serverController;
 
     private int countVariant1 = 4;
     private int countVariant2 = 5;
+    private TypeGame _typeGame = TypeGame.single;
+    private DataModel _clientModelForSend;
 
     private void Start()
     {
@@ -30,6 +35,8 @@ public class GameManager : MonoBehaviour
     {
         _zoneModel = new ZoneModel();
         _playerModel = new PlayerModel();
+        _secondPlayerModel = new PlayerModel();
+        _clientModelForSend = new DataModel();
     }
 
     private void BindServices()
@@ -38,6 +45,8 @@ public class GameManager : MonoBehaviour
         _assetProvider = new AssetProvider();
         _spawnerService = new SpawnerService(_assetProvider);
         _playerController = new PlayerController(_zonesPlaces.SecondZonePlaces, _zoneModel, _playerModel);
+        _clientController = new ClientController(_zoneModel);
+        _serverController = new ServerController(_zoneModel, _playerController);
     }
 
     private void InitZones()
@@ -87,13 +96,46 @@ public class GameManager : MonoBehaviour
             Destroy(cube);
     }
 
+    private void InitServer()
+    {
+        _typeGame = TypeGame.host;
+        _serverController.InitServer();
+    }
+
+    private void InitClient()
+    {
+        _typeGame = TypeGame.client;
+        _clientController.StartConnect();
+    }
+
     private void Update()
     {
-        _playerModel.positionMousePlayer = Input.mousePosition;
-        if (Input.GetMouseButtonDown(0))
+        if (_typeGame == TypeGame.client)
         {
-            _playerModel.ClickMousePlayer?.Invoke();
+            _playerModel.positionMousePlayer = Input.mousePosition;
+            _clientModelForSend.positionMouseClient = _playerModel.positionMousePlayer;
+            if (Input.GetMouseButtonDown(0))
+            {
+                _playerModel.ClickMousePlayer?.Invoke();
+                _clientModelForSend.onClickMouseClient = true;
+            }
+            else
+            {
+                _clientModelForSend.onClickMouseClient = false;
+            }
+
+            var message = Serializer.DataModelToJson(_clientModelForSend);
+            _clientController.SendMessageToServer(message);
         }
+        else
+        {
+            _playerModel.positionMousePlayer = Input.mousePosition;
+            if (Input.GetMouseButtonDown(0))
+            {
+                _playerModel.ClickMousePlayer?.Invoke();
+            }
+        }
+           
     }
 
     private void OnDestroy()
