@@ -7,10 +7,14 @@ public class PlayerController : IPlayerController
     private Zone _secondZonePlaces;
     private bool[,] _arrayChecks;
 
-    public PlayerController(Zone secondZonePlaces, ZoneModel zoneModel)
+    private PlayerModel _playerModel;
+
+    public PlayerController(Zone secondZonePlaces, ZoneModel zoneModel, PlayerModel playerModel)
     {
         _secondZonePlaces = secondZonePlaces;
         _zoneModel = zoneModel;
+        _playerModel = playerModel;
+        _playerModel.ClickMousePlayer += ClickMouse;
     }
 
     public bool Check()
@@ -51,5 +55,16 @@ public class PlayerController : IPlayerController
                 return false;
 
         return true;
+    }
+
+    private void ClickMouse()
+    {
+        var ray = Camera.main.ScreenPointToRay(_playerModel.positionMousePlayer);
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            var cube = hit.collider.gameObject.GetComponent<Cube>();
+            cube.FolowOn(_playerModel);
+        }
     }
 }

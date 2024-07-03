@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     private UI _ui;
 
     private ZoneModel _zoneModel;
+    private PlayerModel _playerModel;
     private IZoneService _zoneService;
     private IAssetProvider _assetProvider;
     private ISpawnerService _spawnerService;
@@ -28,6 +29,7 @@ public class GameManager : MonoBehaviour
     private void BindModels()
     {
         _zoneModel = new ZoneModel();
+        _playerModel = new PlayerModel();
     }
 
     private void BindServices()
@@ -35,7 +37,7 @@ public class GameManager : MonoBehaviour
         _zoneService = new ZoneService(_zoneModel);
         _assetProvider = new AssetProvider();
         _spawnerService = new SpawnerService(_assetProvider);
-        _playerController = new PlayerController(_zonesPlaces.SecondZonePlaces, _zoneModel);
+        _playerController = new PlayerController(_zonesPlaces.SecondZonePlaces, _zoneModel, _playerModel);
     }
 
     private void InitZones()
@@ -83,6 +85,15 @@ public class GameManager : MonoBehaviour
 
         foreach (var cube in _zoneModel.zoneThirdCubes)
             Destroy(cube);
+    }
+
+    private void Update()
+    {
+        _playerModel.positionMousePlayer = Input.mousePosition;
+        if (Input.GetMouseButtonDown(0))
+        {
+            _playerModel.ClickMousePlayer?.Invoke();
+        }
     }
 
     private void OnDestroy()
